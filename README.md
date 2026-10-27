@@ -1,6 +1,7 @@
 # fheroes2: Roguelike Level-Up Rewards
 
-An unofficial, independently maintained modification of the [fheroes2](https://github.com/ihhub/fheroes2) engine for **Heroes of Might and Magic II** made by InfernoGeo (https://www.youtube.com/@InfernoGeoHeroes)
+An unofficial, independently maintained modification of the [fheroes2](https://github.com/ihhub/fheroes2) engine for **Heroes of Might and Magic II** 
+Made by [InfernoGeo](https://www.youtube.com/@InfernoGeoHeroes)
 
 This mod adds **roguelike-inspired rewards when heroes level up**, including opportunities to choose skills, artifacts, and spells. It focuses on giving hero progression more variety and interesting choices.
 
