@@ -5,6 +5,29 @@ Made by [InfernoGeo](https://www.youtube.com/@InfernoGeoHeroes)
 
 This mod adds **roguelike-inspired rewards when heroes level up**, including opportunities to choose skills, artifacts, and spells. It focuses on giving hero progression more variety and interesting choices.
 
+I modified the fheroes2 code to make these changes:
+- after a hero levels up, they get to choose 1 of 3 Artifacts, Primary Skills and Spells (if they can learn and don't have them already)
+- when a hero gets to level 10, they get to choose an Ultimate Artifact instead (if there is no room, the lowest rated artifact will be replaced, no magic book obviously)
+- if a hero doesn't have a spell book, they'll receive one when they level up the first time
+- Mysticism now replenishes more mana, 15, 25, 40 per day OR 10%, 20%, 30% of the total mana, whichever is higher
+- all factions start with Mysticism, Barbarians and Knights with Basic, others with Advanced
+- Eagle Eye never shows up when leveling up
+- AI heroes have a chance to increase their Knowledge by 1 when leveling up (separate from the other gifts) (Might heroes 50%, Magic 33%)
+- Everyone has a low chance of leveling up Wisdom and nobody starts with it, but the AI heroes ignore Wisdom requirements when getting a random spell
+ after leveling up
+
+The artifact choices will depend on the hero's level:
+- treasure artifacts for Levels 2, 3 and 4
+- treasure or minor artifacts for Levels 5, 6 and 7
+- ultimate artifacts at Level 10
+- treasure, minor or major artifacts for all the other Levels
+
+AI advantages:
+- Wisdom requirements are ignored when getting a free spell (after leveling up)
+- the AI has a 50% chance to get a Major Artifact at each level
+
+[NOTE] Right now the AI doesn't really 'choose' stuff, but rather it gets random things, but those are in general the better ones. In the future I'll add a proper choosing logic, but I wanted to just make sure it works, then I'll improve it.
+
 ## How to download and play
 
 **This repository provides source code, not a ready-to-play download.** You will need to compile the modified engine and supply the original Heroes II game data yourself.
