@@ -5,6 +5,12 @@ Made by [InfernoGeo](https://www.youtube.com/@InfernoGeoHeroes)
 
 This mod adds **roguelike-inspired rewards when heroes level up**, including opportunities to choose skills, artifacts, and spells. It focuses on giving hero progression more variety and interesting choices.
 
+## Download for Windows
+
+**[Download fheroes2 Roguelike v0.1 Alpha — Windows 64-bit ZIP](https://github.com/georgestefan94/fheroes2_Roguelike/releases/download/v0.1.0-alpha/fheroes2-Roguelike-v0.1Win.zip)**
+
+No Visual Studio or compiling required. Players must provide Heroes of Might and Magic II game data from their own legally obtained copy. See [installation instructions](#how-to-download-and-play) below.
+
 I modified the fheroes2 code to make these changes:
 - after a hero levels up, they get to choose 1 of 3 Artifacts, Primary Skills and Spells (if they can learn and don't have them already)
 - when a hero gets to level 10, they get to choose an Ultimate Artifact instead (if there is no room, the lowest rated artifact will be replaced, no magic book obviously)
@@ -30,14 +36,20 @@ AI advantages:
 
 ## How to download and play
 
-**This repository provides source code, not a ready-to-play download.** You will need to compile the modified engine and supply the original Heroes II game data yourself.
+### Windows 64-bit — ready-to-run build
 
-1. Download this repository using **Code → Download ZIP**, or clone it with Git.
-2. Build the modified engine. Follow the [fheroes2 development/build instructions](docs/DEVELOPMENT.md). For Windows Visual Studio builds, the project also includes `script/windows/install_packages.bat` to help install build dependencies.
-3. Provide the game data from your own legally obtained copy of **Heroes of Might and Magic II**. See the [fheroes2 installation guide](docs/INSTALL.md) for data-file setup.
-4. Run the newly built `fheroes2.exe` and play with the modified level-up system.
+1. Download the [Windows v0.1 Alpha ZIP](https://github.com/georgestefan94/fheroes2_Roguelike/releases/download/v0.1.0-alpha/fheroes2-Roguelike-v0.1Win.zip) and extract it.
+2. Open your legally obtained **Heroes of Might and Magic II** installation folder.
+3. Copy its `DATA`, `ANIM`, `MAPS`, and `MUSIC` folders (whichever are available) into the extracted mod folder, **beside `fheroes2.exe`**. Merge the existing `maps` folder if Windows asks.
+4. Double-click `fheroes2.exe` to play.
 
-**No original Heroes II commercial images, music, or other game data are distributed in this mod.** No compiled executable is provided in this repository.
+If Windows complains about missing Microsoft Visual C++ runtime DLLs, install the [Microsoft Visual C++ Redistributable for x64](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+
+### Build from source
+
+The modified engine's source code is available in this GitHub repository. Developers can choose **Code → Download ZIP** or clone the repository and follow the [fheroes2 build instructions](docs/DEVELOPMENT.md). Windows builds may require running `script/windows/install_packages.bat` to install dependencies.
+
+**No original commercial Heroes II images, music, or game data are included in the ready-to-run download or source repository.** The release ZIP contains the compiled open-source engine and supporting files, not a standalone copy of Heroes II.
 
 ## Credits and license
 
