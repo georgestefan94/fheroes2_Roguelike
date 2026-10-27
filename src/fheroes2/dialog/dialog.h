@@ -33,6 +33,7 @@
 #include "image.h"
 #include "math_base.h"
 #include "ui_constants.h"
+#include "spell_storage.h"
 
 class Castle;
 class Kingdom;
@@ -115,6 +116,11 @@ namespace Dialog
     int LevelUpSelectSkill( const std::string & name, const int primarySkillType, const Skill::Secondary & sec1, const Skill::Secondary & sec2, Heroes & hero );
     bool SelectGoldOrExp( const std::string &, const std::string &, uint32_t gold, uint32_t expr, const Heroes & );
     int SelectSkillFromArena();
+    int SelectSkillOnLevelUp();
+    int SelectSkillOnLevelUpWithHero(Heroes &hero);
+    int SelectArtifactOnLevelUp(int ultimateArtifact);
+    int SelectArtifactOnLevelUpWithHero( int ultimateArtifact , Heroes &hero);
+    int SelectSpellOnLevelUp( SpellStorage knownSpells, int maxSpellLevel, Heroes &hero);
     bool SelectCount( std::string header, const int32_t min, const int32_t max, int32_t & selectedValue, const int32_t step = 1,
                       const fheroes2::DialogElement * topUiElement = nullptr, const fheroes2::DialogElement * bottomUiElement = nullptr );
 

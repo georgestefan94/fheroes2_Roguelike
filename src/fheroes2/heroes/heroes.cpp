@@ -1194,7 +1194,40 @@ uint32_t Heroes::getDailyRestoredSpellPoints() const
     // Spell points from artifacts.
     points += static_cast<uint32_t>( GetBagArtifacts().getTotalArtifactEffectValue( fheroes2::ArtifactBonusType::SPELL_POINTS_DAILY_GENERATION ) );
 
-    points += GetSecondarySkillValue( Skill::Secondary::MYSTICISM );
+    uint32_t mysticPoints = GetSecondarySkillValue( Skill::Secondary::MYSTICISM );
+    uint32_t totalMana = Heroes::GetKnowledge() * 10;
+    
+    // messy code, but hey, as long as it works
+    if (mysticPoints == 15)
+    {
+        if ( totalMana / 10 > mysticPoints ) {
+            points += totalMana / 10;
+        }
+        else
+        {
+            points += mysticPoints;
+        }
+    }
+
+    if ( mysticPoints == 25 ) {
+        if ( totalMana / 5 > mysticPoints ) {
+            points += totalMana / 5;
+        }
+        else {
+            points += mysticPoints;
+        }
+    }
+
+    if ( mysticPoints == 40 ) {
+        if ( ((totalMana / 10) * 3) > mysticPoints ) {
+            points += ( ( totalMana / 10 ) * 3 );
+        }
+        else {
+            points += mysticPoints;
+        }
+    }
+
+    //points += mysticPoints;
 
     return points;
 }
@@ -1847,6 +1880,9 @@ int Heroes::getNumOfTravelDays( const int32_t dstIdx ) const
 
 void Heroes::_levelUp( const bool skipSecondary, const bool autoselect, const bool isMapLoading )
 {
+    // if a map starts with a hero at level 10, they only get ultimate artifacts (bug)
+    // if heroes start off leveled up, the game prompts roguelike selections before the map starts
+    // maybe give knights and barbarians a magic book if they don't have it?
     const HeroSeedsForLevelUp seeds = _getSeedsForLevelUp();
 
     // level up primary skill
@@ -1856,6 +1892,235 @@ void Heroes::_levelUp( const bool skipSecondary, const bool autoselect, const bo
 
     if ( !skipSecondary ) {
         _levelUpSecondarySkill( seeds, primarySkill, autoselect, isMapLoading );
+    }
+
+    int playerGiftFrequency = 1; // add maybe AI option as well, then add a selection screen when the map starts (later)
+
+    if ( Heroes::GetColor() != PlayerColor::NONE )
+    {
+
+        if (!Heroes::IsFullBagArtifacts())
+        {
+            int artifactValue = 2;
+
+            if ( Heroes::GetLevel() == 10 ) {
+                // art = Artifact::Rand( Artifact::ART_ULTIMATE );
+
+                artifactValue = 3;
+            }
+            else if (Heroes::GetLevel() < 5)
+            {
+                artifactValue = 0;
+            }
+            else if ( Heroes::GetLevel() < 8 ) {
+                artifactValue = 1;
+            }
+
+            if ( Heroes::isControlHuman() && Heroes::GetLevel() % playerGiftFrequency == 0) {
+                AudioManager::PlaySound( M82::GOODLUCK );
+                Artifact art = Artifact::Artifact( Dialog::SelectArtifactOnLevelUpWithHero( artifactValue, *this ) );
+
+                Heroes::PickupArtifact( art );
+                const fheroes2::ArtifactDialogElement artifactUI( art );
+
+                if ( Heroes::GetLevel() == 10 ) {
+                    // AudioManager::PlaySound( M82::GOODLUCK );
+                    AudioManager::PlaySound( M82::GOODMRLE );
+                    std::string header = _( "After reaching Level 10, your hero magically received an Ultimate Artifact!" );
+                    fheroes2::showStandardTextMessage( GetName(), std::move( header ), Dialog::OK, { &artifactUI } );
+                }
+                else {
+                    // AudioManager::PlaySound( M82::GOODLUCK );
+                    std::string header = _( "After leveling up, your hero magically received a Random Artifact!" );
+                    fheroes2::showStandardTextMessage( GetName(), std::move( header ), Dialog::OK, { &artifactUI } );
+                }
+            }
+            else if ( Heroes::isControlAI() )
+            {
+                int lucky = rand() % 2;
+                Artifact artAI = Artifact::Rand( Artifact::ART_LEVEL_ALL_NORMAL );
+
+                if (lucky == 0)
+                {
+                    artAI = Artifact::Rand( Artifact::ART_LEVEL_MAJOR );
+                }
+                
+                if ( artifactValue == 3 ) {
+                    artAI = Artifact::Rand( Artifact::ART_ULTIMATE );
+                }
+
+                Heroes::PickupArtifact( artAI );
+            }
+        }
+        else
+        {
+            // if the AI doesn't have room, replace a trash artifact with the Ultimate One
+            if ( Heroes::isControlAI() && Heroes::GetLevel() == 10 )
+            {
+                BagArtifacts AIBag = Heroes::GetBagArtifacts();
+                double minArtifactValue = 2000;
+                int indexToReplace = -1;
+
+                for (int k = 0; k < AIBag.size(); k++)
+                {
+                    if ( AIBag[k].GetID() != Artifact::MAGIC_BOOK && AIBag[k].getArtifactValue() < minArtifactValue )
+                    {
+                        minArtifactValue = AIBag[k].getArtifactValue();
+                        indexToReplace = k;
+                    }
+                }
+
+                // unnecessary check, but still
+                if (indexToReplace >= 0)
+                {
+                    Artifact artAI = Artifact::Rand( Artifact::ART_ULTIMATE );
+                    
+                    Heroes::GetBagArtifacts().at( indexToReplace ).Reset();
+                    Heroes::PickupArtifact( artAI );
+                }
+            }
+            else if (Heroes::isControlHuman() && Heroes::GetLevel() == 10)
+            {
+                if ( Heroes::isControlHuman() ) {
+                    AudioManager::PlaySound( M82::GOODLUCK );
+                    Artifact art = Artifact::Artifact( Dialog::SelectArtifactOnLevelUpWithHero( 3, *this ) );
+
+                    //Heroes::PickupArtifact( art );
+                    const fheroes2::ArtifactDialogElement artifactUI( art );
+
+                    BagArtifacts AIBag = Heroes::GetBagArtifacts();
+                    double minArtifactValue = 2000;
+                    int indexToReplace = -1;
+
+                    for ( int k = 0; k < AIBag.size(); k++ ) {
+                        if ( AIBag[k].GetID() != Artifact::MAGIC_BOOK && AIBag[k].getArtifactValue() < minArtifactValue ) {
+                            minArtifactValue = AIBag[k].getArtifactValue();
+                            indexToReplace = k;
+                        }
+                    }
+
+                    // unnecessary check, but still
+                    if ( indexToReplace >= 0 ) {
+                        Heroes::GetBagArtifacts().at( indexToReplace ).Reset();
+                        Heroes::PickupArtifact( art );
+                    }
+
+                    // AudioManager::PlaySound( M82::GOODLUCK );
+                    AudioManager::PlaySound( M82::GOODMRLE );
+                    std::string header = _( "After reaching Level 10, your hero magically received an Ultimate Artifact! However, your backpack is FULL! The Lowest rated artifact will be replaced!" );
+                    fheroes2::showStandardTextMessage( GetName(), std::move( header ), Dialog::OK, { &artifactUI } );
+                }
+            }
+        }
+
+        if ( Heroes::isControlHuman() && Heroes::GetLevel() % playerGiftFrequency == 0 ) {
+            //AudioManager::PlaySound( M82::GOODLUCK );
+            AudioManager::PlaySound( M82::GOODMRLE );
+            Heroes::IncreasePrimarySkill( Dialog::SelectSkillOnLevelUpWithHero(*this) );
+
+            if ( Heroes::hasArtifact( Artifact::MAGIC_BOOK ) ) {
+
+                int maxSpellCount = 65;
+
+                //Heroes::getMagicBookSpells().size() != 0 && 
+
+                if ( Heroes::getMagicBookSpells().size() < maxSpellCount )
+                {
+                    auto wisdomLevel = Heroes::GetSecondarySkillValue( Skill::Secondary::WISDOM );
+
+                    if (wisdomLevel == 0)
+                    {
+                        wisdomLevel = 2;
+                    }
+
+                    AudioManager::PlaySound( M82::COLDRING );
+                    Heroes::AppendSpellToBook( Spell( Dialog::SelectSpellOnLevelUp( Heroes::getMagicBookSpells(), wisdomLevel, *this ) ), true );
+                }
+            }
+            else
+            {
+                Artifact magicBook = Artifact( Artifact::MAGIC_BOOK );
+                Heroes::PickupArtifact( magicBook );
+
+                const fheroes2::ArtifactDialogElement artifactUI( magicBook );
+
+                AudioManager::PlaySound( M82::COLDRING );
+                std::string header = _( "Your hero magically received a Magic Book!" );
+                fheroes2::showStandardTextMessage( GetName(), std::move( header ), Dialog::OK, { &artifactUI } );
+            }
+            // + Heroes::GetSecondarySkillValue( Skill::Secondary::WISDOM )));
+        }
+        else if ( Heroes::isControlAI() )
+        {
+            if (Heroes::GetRace() == Race::KNGT || Heroes::GetRace() == Race::BARB)
+            {
+                if (rand() % 2 == 0)
+                {
+                    Heroes::IncreasePrimarySkill( KNOWLEDGE );
+                }
+                else
+                {
+                    Heroes::IncreasePrimarySkill( POWER );
+                }
+
+                if ( rand() % 100 < 33 ) {
+                    if ( rand() % 2 == 0 ) {
+                        Heroes::IncreasePrimarySkill( ATTACK );
+                    }
+                    else {
+                        Heroes::IncreasePrimarySkill( DEFENSE );
+                    }
+                }
+            }
+            else
+            {
+                if ( rand() % 2 == 0 ) {
+                    Heroes::IncreasePrimarySkill( ATTACK );
+                }
+                else
+                {
+                    Heroes::IncreasePrimarySkill( DEFENSE );
+                }
+
+                if ( rand() % 100 < 33 ) {
+                    Heroes::IncreasePrimarySkill( KNOWLEDGE );
+                }
+            }
+
+            if (Heroes::HaveSpellBook())
+            {
+                int randomLevel = rand() % 5 + 1;
+                Heroes::AppendSpellToBook( Spell::getRandomSpell( randomLevel ), true );
+            }
+            else
+            {
+                Artifact magicBook = Artifact( Artifact::MAGIC_BOOK );
+                Heroes::PickupArtifact( magicBook );
+            }
+        }
+
+        // inferno
+
+        
+        
+
+        //int i = 0;
+
+        //while (i < bag.size())
+        //{
+        //    if (bag[i].GetID() == 0)
+        //    {
+        //        bag[i] = art;
+        //        //bag[0].Reset();
+        //        Heroes::_bagArtifacts = bag;
+        //        Dialog::ArtifactSetAssembled()
+        //        i = 15;
+        //    }
+        //    else
+        //    {
+        //        i++;
+        //    }
+        //}
     }
 }
 
@@ -1965,10 +2230,6 @@ void Heroes::Dismiss( const int reason )
     // Reset army to default state for hero's race if hero did not surrender in battle.
     if ( ( reason & Battle::RESULT_SURRENDER ) == 0 ) {
         _army.Reset( true );
-    }
-    else if ( !_army.isValid() ) {
-        // Reset empty army for surrendered hero.
-        _army.Reset( false );
     }
 
     const PlayerColor heroColor = GetColor();
@@ -2111,6 +2372,8 @@ void Heroes::PortraitRedraw( const int32_t px, const int32_t py, const PortraitT
         }
         else if ( PORT_SMALL == type ) {
             const fheroes2::Sprite & background = Assets::getImage( ICN::PORTXTRA, 0 );
+            const fheroes2::Sprite & mobility = Assets::getImage( ICN::MOBILITY, GetMobilityIndexSprite() );
+            const fheroes2::Sprite & mana = Assets::getImage( ICN::MANA, getManaIndexSprite() );
 
             const int barw = 7;
 
@@ -2118,23 +2381,13 @@ void Heroes::PortraitRedraw( const int32_t px, const int32_t py, const PortraitT
             fheroes2::Blit( background, dstsf, px, py );
 
             // Draw mobility.
-            const uint32_t mobilitySpriteIndex = GetMobilityIndexSprite();
-            // Don't draw this sprite if there are no movement points left.
-            if ( mobilitySpriteIndex > 0 ) {
-                const fheroes2::Sprite & mobility = Assets::getImage( ICN::MOBILITY, mobilitySpriteIndex );
-                fheroes2::Copy( mobility, 0, 0, dstsf, px, py + mobility.y(), mobility.width(), mobility.height() );
-            }
+            fheroes2::Copy( mobility, 0, 0, dstsf, px, py + mobility.y(), mobility.width(), mobility.height() );
 
             // Draw hero's portrait.
             fheroes2::Copy( port, 0, 0, dstsf, px + barw + 1, py, port.width(), port.height() );
 
             // Draw mana.
-            const uint32_t manaSpriteIndex = getManaIndexSprite();
-            // Don't draw this sprite if there are no spell points left.
-            if ( manaSpriteIndex > 0 ) {
-                const fheroes2::Sprite & mana = Assets::getImage( ICN::MANA, manaSpriteIndex );
-                fheroes2::Copy( mana, 0, 0, dstsf, px + barw + port.width() + 2, py + mana.y(), mana.width(), mana.height() );
-            }
+            fheroes2::Copy( mana, 0, 0, dstsf, px + barw + port.width() + 2, py + mana.y(), mana.width(), mana.height() );
 
             mp.x = 35;
         }

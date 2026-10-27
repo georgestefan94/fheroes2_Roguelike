@@ -556,8 +556,22 @@ std::string Skill::Secondary::GetDescription( const Heroes & hero ) const
         break;
     }
     case MYSTICISM: {
-        str = _n( "%{skill} regenerates one additional spell point per day to the hero.", "%{skill} regenerates %{count} additional spell points per day to the hero.",
-                  count );
+        switch ( Level() ) {
+        case Level::BASIC:
+            str = _n( "%{skill} regenerates one additional spell point per day to the hero.", "%{skill} regenerates %{count} additional spell points per day to the hero OR 10% of the total mana if that number is higher than %{count}.",
+                      count );
+            break;
+        case Level::ADVANCED:
+            str = _n( "%{skill} regenerates one additional spell point per day to the hero.", "%{skill} regenerates %{count} additional spell points per day to the hero OR 20% of the total mana if that number is higher than %{count}.",
+                      count );
+            break;
+        case Level::EXPERT:
+            str = _n( "%{skill} regenerates one additional spell point per day to the hero.", "%{skill} regenerates %{count} additional spell points per day to the hero OR 30% of the total mana if that number is higher than %{count}",
+                      count );
+            break;
+        default:
+            break;
+        }
         break;
     }
     case LUCK: {

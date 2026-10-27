@@ -378,6 +378,11 @@ double Artifact::getArtifactValue() const
         }
     }
 
+    if (this->isUltimate())
+    {
+        artifactValue += 1000;
+    }
+
     return artifactValue;
 }
 
