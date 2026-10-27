@@ -1,3 +1,56 @@
+# fheroes2: Roguelike Level-Up Rewards
+
+An unofficial, independently maintained modification of the [fheroes2](https://github.com/ihhub/fheroes2) engine for **Heroes of Might and Magic II** 
+Made by [InfernoGeo](https://www.youtube.com/@InfernoGeoHeroes)
+
+This mod adds **roguelike-inspired rewards when heroes level up**, including opportunities to choose skills, artifacts, and spells. It focuses on giving hero progression more variety and interesting choices.
+
+I modified the fheroes2 code to make these changes:
+- after a hero levels up, they get to choose 1 of 3 Artifacts, Primary Skills and Spells (if they can learn and don't have them already)
+- when a hero gets to level 10, they get to choose an Ultimate Artifact instead (if there is no room, the lowest rated artifact will be replaced, no magic book obviously)
+- if a hero doesn't have a spell book, they'll receive one when they level up the first time
+- Mysticism now replenishes more mana, 15, 25, 40 per day OR 10%, 20%, 30% of the total mana, whichever is higher
+- all factions start with Mysticism, Barbarians and Knights with Basic, others with Advanced
+- Eagle Eye never shows up when leveling up
+- AI heroes have a chance to increase their Knowledge by 1 when leveling up (separate from the other gifts) (Might heroes 50%, Magic 33%)
+- Everyone has a low chance of leveling up Wisdom and nobody starts with it, but the AI heroes ignore Wisdom requirements when getting a random spell
+ after leveling up
+
+The artifact choices will depend on the hero's level:
+- treasure artifacts for Levels 2, 3 and 4
+- treasure or minor artifacts for Levels 5, 6 and 7
+- ultimate artifacts at Level 10
+- treasure, minor or major artifacts for all the other Levels
+
+AI advantages:
+- Wisdom requirements are ignored when getting a free spell (after leveling up)
+- the AI has a 50% chance to get a Major Artifact at each level
+
+[NOTE] Right now the AI doesn't really 'choose' stuff, but rather it gets random things, but those are in general the better ones. In the future I'll add a proper choosing logic, but I wanted to just make sure it works, then I'll improve it.
+
+## How to download and play
+
+**This repository provides source code, not a ready-to-play download.** You will need to compile the modified engine and supply the original Heroes II game data yourself.
+
+1. Download this repository using **Code → Download ZIP**, or clone it with Git.
+2. Build the modified engine. Follow the [fheroes2 development/build instructions](docs/DEVELOPMENT.md). For Windows Visual Studio builds, the project also includes `script/windows/install_packages.bat` to help install build dependencies.
+3. Provide the game data from your own legally obtained copy of **Heroes of Might and Magic II**. See the [fheroes2 installation guide](docs/INSTALL.md) for data-file setup.
+4. Run the newly built `fheroes2.exe` and play with the modified level-up system.
+
+**No original Heroes II commercial images, music, or other game data are distributed in this mod.** No compiled executable is provided in this repository.
+
+## Credits and license
+
+This project is based on the open-source **fheroes2** engine created by the [fheroes2 contributors](https://github.com/ihhub/fheroes2). This is an unofficial fork and is not an official release of fheroes2.
+
+The engine source code and modifications are distributed under the **GNU General Public License v2.0**; see the repository's [LICENSE](LICENSE) and retained source-file notices. Original Heroes II game assets are separate and remain subject to their owners' rights.
+
+---
+
+## About the original fheroes2 project
+
+The following is the original fheroes2 project README, retained for upstream documentation and attribution. Its download links, community contacts, and donation information refer to the **original fheroes2 project**, not specifically to this mod.
+
 # fheroes2
 
 **fheroes2** is a recreation of the Heroes of Might and Magic II game engine.
